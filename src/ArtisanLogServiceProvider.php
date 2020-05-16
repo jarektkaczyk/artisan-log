@@ -8,6 +8,8 @@ class ArtisanLogServiceProvider extends ServiceProvider
 {
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__.'/../config/artisan_log.php', 'artisan_log');
+
         $config = $this->app['config']->get('artisan_log');
 
         $channel = isset($config['log_channel']) && $config['log_channel'] !== 'default'
