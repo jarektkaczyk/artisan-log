@@ -105,6 +105,10 @@ class LogArtisanTest extends MockeryTestCase
             $this->createMock(EventMutex::class),
             "'/usr/bin/php' 'artisan' scheduled:command arg1 --opt1"
         );
+        $scheduledCallable = new Event(
+            $this->createMock(EventMutex::class),
+            fn () => null
+        );
 
         return [
             [
@@ -134,6 +138,10 @@ class LogArtisanTest extends MockeryTestCase
             [
                 new CommandStarting('make:controller', $input, $output),
                 null
+            ],
+            [
+                new ScheduledTaskStarting($scheduledCallable),
+                '[scheduled artisan starting] closure command1',
             ],
         ];
     }

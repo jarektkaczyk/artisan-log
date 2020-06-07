@@ -2,6 +2,7 @@
 
 namespace Sofa\ArtisanLog;
 
+use Closure;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Console\Events\ScheduledTaskFinished;
@@ -143,9 +144,18 @@ class LogArtisan
 
     private function parseName($event): string
     {
-        return $event instanceof CommandStarting || $event instanceof CommandFinished
+        static $closures;
+        $closures ??= 0;
+
+        $name = $event instanceof CommandStarting || $event instanceof CommandFinished
             ? $this->commandName($event)
             : $this->scheduleName($event);
+
+        if ($name === 'closure command') {
+            $name .= (++$closures);
+        }
+
+        return $name;
     }
 
     /**
@@ -154,6 +164,10 @@ class LogArtisan
      */
     private function commandName($event): string
     {
+        if ($event->command instanceof Closure) {
+            return 'closure command';
+        }
+
         try {
             $command = (string)$event->input;
 
@@ -170,6 +184,10 @@ class LogArtisan
      */
     private function scheduleName($event)
     {
+        if ($event->task->command instanceof Closure) {
+            return 'closure command';
+        }
+
         // We're likely to deal with and artisan command - we'll strip irrelevant parts if that's the case
         if (Str::contains($event->task->command, 'artisan')) {
             return Collection::make(preg_split('/\h+/', $event->task->command, -1, PREG_SPLIT_NO_EMPTY))
