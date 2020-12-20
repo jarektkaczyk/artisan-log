@@ -7,6 +7,7 @@ use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskStarting;
+use Illuminate\Console\Scheduling\CallbackEvent;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
@@ -164,7 +165,7 @@ class LogArtisan
      */
     private function commandName($event): string
     {
-        if ($event->command instanceof Closure) {
+        if ($event->command instanceof CallbackEvent || $event->command instanceof Closure) {
             return 'closure command';
         }
 
@@ -184,7 +185,7 @@ class LogArtisan
      */
     private function scheduleName($event)
     {
-        if ($event->task->command instanceof Closure) {
+        if ($event->task instanceof CallbackEvent || $event->task->command instanceof Closure) {
             return 'closure command';
         }
 

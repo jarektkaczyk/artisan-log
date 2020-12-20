@@ -7,6 +7,7 @@ use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskStarting;
+use Illuminate\Console\Scheduling\CallbackEvent;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Scheduling\EventMutex;
 use Illuminate\Support\Facades\Event as EventFacade;
@@ -105,7 +106,7 @@ class LogArtisanTest extends MockeryTestCase
             $this->createMock(EventMutex::class),
             "'/usr/bin/php' 'artisan' scheduled:command arg1 --opt1"
         );
-        $scheduledCallable = new Event(
+        $scheduledCallable = new CallbackEvent(
             $this->createMock(EventMutex::class),
             fn () => null
         );
